@@ -76,7 +76,7 @@ export class VirtualMachine {
     }
 
     pop(i = 0) {
-        return this.frame.stack.slice(this.frame.stack.length - 1 - i, 1)[0];
+        return this.frame.stack.splice(this.frame.stack.length - 1 - i, 1)[0];
     }
 
     push(val) {
@@ -266,6 +266,7 @@ export class VirtualMachine {
             //FIXME this.last_exception = sys.exc_info()[:2] + (null,);
             stdout(err);
             why = 'exception';
+            this.last_exception = err;
         }
         return why;
     }
@@ -822,9 +823,8 @@ export class VirtualMachine {
     byte_MAKE_FUNCTION(argc) {
         const name = this.pop(),
             code = this.pop(),
-            defaults = this.popn(argc),
-            fn = new PyFunction(name, code, this.frame.globals, defaults, null, this);
-        this.push(fn);
+            defaults = this.popn(argc);
+        this.push(new PyFunction(name, code, this.frame.globals, defaults, null, this));
     }
 
     byte_LOAD_CLOSURE(name) {

@@ -27,7 +27,7 @@
 
  *************************************************************************/
 
-import {VirtualMachine} from '../VirtualMachine';
+import {VirtualMachine} from '../vm';
 import {PYCFile} from '../core/PYCFile';
 import {Code} from '../core/Code';
 import {assert} from '../utils';

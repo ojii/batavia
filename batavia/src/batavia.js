@@ -1,9 +1,9 @@
 import {dis} from './modules/dis';
-import {dom} from './modules/dis';
-import {inspect} from './modules/dis';
-import {marshal} from './modules/dis';
-import {sys} from './modules/dis';
-import {time} from './modules/dis';
+import {dom} from './modules/dom';
+import {inspect} from './modules/inspect';
+import {marshal} from './modules/marshal';
+import {sys} from './modules/sys';
+import {time} from './modules/time';
 
 
 function fixedConsoleLog(msg) {

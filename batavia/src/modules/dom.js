@@ -9,16 +9,17 @@
  *  1. To unwind posargs into arguments on the DOM function
  *  2. To set `this` on the function call.
  */
-var __func_proxy__ = function(obj, attr) {
-    return function(posargs, kwargs) {
+
+function __func_proxy__(obj, attr) {
+    return function(posargs) {
         return obj[attr].apply(obj, posargs);
     };
-};
+}
 
 /*
  * Proxy attribute access on DOM objects.
  */
-var __attr_proxy__ = function(obj, attr, proxy) {
+function __attr_proxy__(obj, attr, proxy) {
     Object.defineProperty(
         proxy,
         attr,
@@ -32,9 +33,9 @@ var __attr_proxy__ = function(obj, attr, proxy) {
         }
     );
 
-};
+}
 
-var __proxy__ = function(objname, obj) {
+function __proxy__ (objname, obj) {
     var proxy = {};
     for (var attr in obj) {
         if (typeof obj[attr] === 'function') {
@@ -44,25 +45,17 @@ var __proxy__ = function(objname, obj) {
         }
     }
     return proxy;
+}
+
+
+export const dom = {
+    self: __proxy__('self', window.self),
+    window: __proxy__('window', window),
+    parent: __proxy__('parent', parent),
+    top: __proxy__('top', top),
+    navigator: __proxy__('navigator', navigator),
+    frames: __proxy__('frames', frames),
+    location: __proxy__('location', location),
+    history: __proxy__('history', history),
+    document: __proxy__('document', document)
 };
-
-
-batavia.modules.dom = {
-};
-
-batavia.modules.dom.self = __proxy__('self', self);
-batavia.modules.dom.window = __proxy__('window', window);
-batavia.modules.dom.parent = __proxy__('parent', parent);
-batavia.modules.dom.top = __proxy__('top', top);
-
-batavia.modules.dom.navigator = __proxy__('navigator', navigator);
-
-batavia.modules.dom.frames = __proxy__('frames', frames);
-
-batavia.modules.dom.location = __proxy__('location', location);
-
-batavia.modules.dom.history = __proxy__('history', history);
-
-batavia.modules.dom.document = __proxy__('document', document);
-
-batavia.modules.dom.batavia = __proxy__('batavia', batavia);

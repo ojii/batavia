@@ -17,14 +17,16 @@
  *        actual value.
  */
 
-batavia.core.Cell = function(value) {
-    this.contents = value;
-};
+export class Cell {
+    constructor(value) {
+        this.contents = value;
+    }
 
-batavia.core.Cell.prototype.get = function() {
-    return this.contents;
-};
+    get() {
+        return this.contents;
+    }
 
-batavia.core.Cell.prototype.set = function(value) {
-    this.contents = value;
-};
+    set(value) {
+        this.contents = value;
+    }
+}

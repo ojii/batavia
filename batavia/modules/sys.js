@@ -1,4 +1,0 @@
-
-batavia.modules.sys = {
-    'modules': {}
-};

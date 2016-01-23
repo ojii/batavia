@@ -7,4 +7,5 @@ build
 local
 _build
 distribute-*
-/batavia.js
+batavia/batavia.*
+node_modules

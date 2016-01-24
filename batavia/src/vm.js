@@ -47,10 +47,14 @@ export class VirtualMachine {
 
     run(tag, args) {
         args = args || [];
-        const payload = document.getElementById('batavia-' + tag).text.replace(/(\r\n|\n|\r)/gm, "").trim(),
-            bytecode = atob(payload),
-            code = modules.marshal.load_pyc(this, bytecode);
+        const payload = document.getElementById('batavia-' + tag).text.replace(/(\r\n|\n|\r)/gm, "").trim();
+        this.run_payload(payload, args);
+    }
 
+    run_payload(payload, args){
+        args = args || [];
+        const bytecode = atob(payload);
+        const code = modules.marshal.load_pyc(this, bytecode);
         // Set up sys.argv
         modules.sys.argv = ['batavia'];
         modules.sys.argv.extend(args);
@@ -202,22 +206,22 @@ export class VirtualMachine {
             arg = this.frame.f_code.co_code.slice(this.frame.f_lasti, this.frame.f_lasti + 2);
             this.frame.f_lasti += 2;
             intArg = arg[0] + (arg[1] << 8);
-            if (operation.opcode in modules.dis.hasconst) {
+            if (modules.dis.hasconst.has(operation.opcode)) {
                 operation.args = [this.frame.f_code.co_consts[intArg]];
-            } else if (operation.opcode in modules.dis.hasfree) {
+            } else if (modules.dis.hasfree.has(operation.opcode)) {
                 if (intArg < this.frame.f_code.co_cellvars.length) {
                     operation.args = [this.frame.f_code.co_cellvars[intArg]];
                 } else {
                     var_idx = intArg - this.frame.f_code.co_cellvars.length;
                     operation.args = [this.frame.f_code.co_freevars[var_idx]];
                 }
-            } else if (operation.opcode in modules.dis.hasname) {
+            } else if (modules.dis.hasname.has(operation.opcode)) {
                 operation.args = [this.frame.f_code.co_names[intArg]];
-            } else if (operation.opcode in modules.dis.hasjrel) {
+            } else if (modules.dis.hasjrel.has(operation.opcode)) {
                 operation.args = [this.frame.f_lasti + intArg];
-            } else if (operation.opcode in modules.dis.hasjabs) {
+            } else if (modules.dis.hasjabs.has(operation.opcode)) {
                 operation.args = [intArg];
-            } else if (operation.opcode in modules.dis.haslocal) {
+            } else if (modules.dis.haslocal.has(operation.opcode)) {
                 operation.args = [this.frame.f_code.co_varnames[intArg]];
             } else {
                 operation.args = [intArg];

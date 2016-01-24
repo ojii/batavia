@@ -24,7 +24,11 @@ export class AssertionError extends Exception {}
 export class AttributeError extends Exception {}
 export class BufferError extends Exception {}
 export class EOFError extends Exception {}
-export class ImportError extends Exception {}
+export class ImportError extends Exception {
+    constructor(name){
+        super(`No module named '${name}`);
+    }
+}
 export class LookupError extends Exception {}
 export class IndexError extends LookupError {}
 export class KeyError extends LookupError {}
@@ -68,11 +72,7 @@ export class RuntimeWarning extends Warning {}
 export class SyntaxWarning extends Warning {}
 export class UserWarning extends Warning {}
 export class FutureWarning extends Warning {}
-export class ImportWarning extends Warning {
-    constructor(name){
-        super(`No module named '${name}`);
-    }
-}
+export class ImportWarning extends Warning {}
 export class UnicodeWarning extends Warning {}
 export class BytesWarning extends Warning {}
 export class ResourceWarning extends Warning {}
@@ -110,7 +110,6 @@ export function __import__(args){
     } catch (err){
         throw new ImportError(name);
     }
-
 }
 
 export function abs(args){

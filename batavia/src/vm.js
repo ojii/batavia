@@ -5,14 +5,15 @@ import {Frame} from './core/Frame';
 import {PyFunction} from './core/Function';
 import {operators, comparisons, assert, iter} from './utils';
 
-function build_class(args) {
-    const func = args[0],
-    // Create a locals context, and run the class function in it.
-        locals = {};
-    let klass;
+
+function __build_class__(args) {
+    var func = args[0];
+
+    var locals = {};
+
     func.__call__.apply(this, [[], [], locals]);
-    // Now construct the class, based on the constructed local context.
-    klass = function (vm, args, kwargs) {
+
+    var klass = function(vm, args, kwargs) {
         if (this.__init__) {
             for (var attr in Object.getPrototypeOf(this)) {
                 if (this[attr].__call__) {
@@ -29,12 +30,15 @@ function build_class(args) {
         }
     }
 
-    return ((vm, klass) => {
-        return (args, kwargs) => {
+    var PyObject = function(vm, klass) {
+        return function(args, kwargs) {
             return new klass(vm, args, kwargs);
         };
-    })(this, klass);
+    }(this, klass);
+
+    return PyObject;
 }
+
 
 export class VirtualMachine {
     constructor() {
@@ -248,7 +252,7 @@ export class VirtualMachine {
     dispatch(opcode, args) {
         let bytecode_fn, why = null;
         try {
-            // window.console.log('OPCODE: ', modules.dis.opname[opcode];, args);
+            window.console.log('OPCODE: ', modules.dis.opname[opcode], args);
             if (modules.dis.unary_ops.has(opcode)) {
                 this.unaryOperator(modules.dis.opname[opcode].slice(6));
             } else if (modules.dis.binary_ops.has(opcode)) {
@@ -327,6 +331,7 @@ export class VirtualMachine {
         let why, operation;
 
         this.push_frame(frame);
+
         while (true) {
             operation = this.parse_byte_and_args();
             // this.log(operation);
@@ -479,7 +484,7 @@ export class VirtualMachine {
     }
 
     byte_LOAD_LOCALS() {
-        this.push(this.frame.f_locals());
+        this.push(this.frame.f_locals);
     }
 
     unaryOperator(op) {
@@ -971,7 +976,7 @@ export class VirtualMachine {
 //     six.exec_(stmt, globs, locs) f
 // };
     byte_LOAD_BUILD_CLASS() {
-        this.push(build_class.bind(this));
+        this.push(__build_class__.bind(this));
     }
 
     byte_STORE_LOCALS() {

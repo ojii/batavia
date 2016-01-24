@@ -246,7 +246,6 @@ export const inspect = {
         //
         // getfullargspec() historically ignored __wrapped__ attributes,
         // so we ensure that remains the case in 3.3+
-
         let sig = inspect._signature_internal(func, false, false),
             args = [],
             varargs = null,
@@ -255,11 +254,9 @@ export const inspect = {
             defaults = [],
             annotations = {},
             kwdefaults = {};
-
         if (sig.return_annotation.length > 0) {
             annotations['return'] = sig.return_annotation;
         }
-
         for (var p in sig.parameters) {
             if (sig.parameters.hasOwnProperty(p)) {
                 var param = sig.parameters[p];
@@ -297,7 +294,6 @@ export const inspect = {
             // compatibility with 'func.__defaults__'
             defaults = null;
         }
-
         return new inspect.FullArgSpec({
             'args': args,
             'varargs': varargs,
@@ -784,7 +780,7 @@ inspect.Signature.from_function = function (func) {
     }
 
     // ... w/ defaults.
-    for (var offset = 0, m = non_default_count; n < positional.length; offset++, m++) { // jshint ignore:line
+    for (var offset = 0, m = non_default_count; m < positional.length; offset++, m++) { // jshint ignore:line
         name = positional[m];
         annotation = annotations[name];
         parameters.append(new inspect.Parameter({

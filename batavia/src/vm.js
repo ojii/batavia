@@ -41,12 +41,19 @@ function __build_class__(args) {
 
 
 export class VirtualMachine {
-    constructor() {
+    constructor(debug=false) {
         modules.dis.init();
         this.frames = [];
         this.frame = null;
         this.return_value = null;
         this.last_exception = null;
+        this._debug = debug;
+    }
+
+    dbg(msg){
+        if (this._debug){
+            window.console.log(msg);
+        }
     }
 
     run(tag, args) {
@@ -252,7 +259,7 @@ export class VirtualMachine {
     dispatch(opcode, args) {
         let bytecode_fn, why = null;
         try {
-            window.console.log('OPCODE: ', modules.dis.opname[opcode], args);
+            this.dbg(`OPCODE: ${modules.dis.opname[opcode]} ${args}`);
             if (modules.dis.unary_ops.has(opcode)) {
                 this.unaryOperator(modules.dis.opname[opcode].slice(6));
             } else if (modules.dis.binary_ops.has(opcode)) {
@@ -524,7 +531,7 @@ export class VirtualMachine {
 
     byte_STORE_SUBSCR() {
         const items = this.popn(3);
-        items[2][items[1]] = items[0];
+        items[1][items[2]] = items[0];
     }
 
     byte_DELETE_SUBSCR() {

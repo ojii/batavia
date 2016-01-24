@@ -230,7 +230,7 @@ AQ==
     <script>
 function run(module) {
     console.log('Create VM');
-    var vm = new batavia.VirtualMachine();
+    var vm = new batavia.VirtualMachine(true);
     console.log('Run code...');
     // The first argument is the Python dotted-path of the module to run
     // The second argument is the value for sys.argv

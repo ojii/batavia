@@ -1,4 +1,6 @@
 import {modules} from '../batavia';
+import {BataviaError} from '../builtins';
+import {dis} from '../modules/dis';
 
 export function make_callable(func) {
     return function (args, kwargs, locals) {
@@ -12,11 +14,8 @@ export function make_callable(func) {
             gen,
             retval;
 
-        if (func.__code__.co_flags & modules.dis.CO_GENERATOR) {
-            // FIXME: where does Generator come from?
-            gen = new Generator(frame, this);
-            frame.generator = gen;
-            retval = gen;
+        if (func.__code__.co_flags & dis.CO_GENERATOR) {
+            throw new BataviaError("Generators not supported");
         } else {
             retval = this.run_frame(frame);
         }
@@ -48,7 +47,6 @@ export class PyFunction {
         // if (closure) {
         //     kw['closure'] = tuple(make_cell(0) for _ in closure)
         // }
-
         this.__call__ = make_callable(this);
 
         this.argspec = modules.inspect.getfullargspec(this);

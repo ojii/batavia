@@ -10,7 +10,7 @@ function build_class(args) {
     // Create a locals context, and run the class function in it.
         locals = {};
     let klass;
-    func.__call__.apply(this, [[], [], locals])
+    func.__call__.apply(this, [[], [], locals]);
     // Now construct the class, based on the constructed local context.
     klass = function (vm, args, kwargs) {
         if (this.__init__) {

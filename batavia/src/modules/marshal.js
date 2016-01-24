@@ -81,7 +81,7 @@ export const marshal = {
     PyLong_MARSHAL_SHIFT: 15,
 // #define PyLong_MARSHAL_BASE ((short)1 << PyLong_MARSHAL_SHIFT)
 // #define PyLong_MARSHAL_MASK (PyLong_MARSHAL_BASE - 1)
-// #if PyLong_SHIFT % PyLong_MARSHAL_SHIFT != 0
+// #if PyLong_SHIFT % PyLong_MARSHAL_SHIFT !== 0
 // #error "PyLong_SHIFT must be a multiple of PyLong_MARSHAL_SHIFT"
 // #endif
 // #define PyLong_MARSHAL_RATIO (PyLong_SHIFT / PyLong_MARSHAL_SHIFT)
@@ -136,7 +136,7 @@ export const marshal = {
         //     var mview;
         //     var buf;
 
-        //     if (PyBuffer_FillInfo(buf, null, p.buf, n, 0, PyBUF_CONTIG) == -1) {
+        //     if (PyBuffer_FillInfo(buf, null, p.buf, n, 0, PyBUF_CONTIG) === -1) {
         //         return null;
         //     }
         //     mview = PyMemoryView_FromBuffer(buf);
@@ -148,7 +148,7 @@ export const marshal = {
         //         read = PyNumber_AsSsize_t(res, builtins.ValueError);
         //     }
         // }
-        // if (read != n) {
+        // if (read !== n) {
         //     if (!vm.PyErr_Occurred()) {
         //         if (read > n)
         //             vm.PyErr_Format(builtins.ValueError,
@@ -239,7 +239,7 @@ export const marshal = {
     //         if (md < 0 || md > PyLong_MARSHAL_BASE)
     //             goto bad_digit;
     //         /* topmost marshal digit should be nonzero */
-    //         if (md === 0 && j == shorts_in_top_digit - 1) {
+    //         if (md === 0 && j === shorts_in_top_digit - 1) {
     //             vm.PyErr_SetString(builtins.ValueError,
     //                 "bad marshal data (unnormalized long data)");
     //             return null;
@@ -313,7 +313,7 @@ export const marshal = {
         var idx = 0;
         var i, n;
         var type, code = marshal.r_byte(vm, p);
-        var flag;
+        var flag, buf;
 
         if (code === PYCFile.EOF) {
             vm.PyErr_SetString(builtins.EOFError,
@@ -409,7 +409,7 @@ export const marshal = {
                 e |= (buf[6] >> 4) & 0xF;
                 fhi = (buf[6] & 0xF) << 24;
 
-                if (e == 2047) {
+                if (e === 2047) {
                     throw "can't unpack IEEE 754 special value on non-IEEE platform";
                 }
 
@@ -462,7 +462,7 @@ export const marshal = {
                 //     char buf[256], *ptr;
                 //     Py_complex c;
                 //     n = marshal.r_byte(vm, p);
-                //     if (n == EOF) {
+                //     if (n === EOF) {
                 //         vm.PyErr_SetString(builtins.EOFError,
                 //             "EOF read where object expected");
                 //         break;
@@ -473,10 +473,10 @@ export const marshal = {
                 //     memcpy(buf, ptr, n);
                 //     buf[n] = '\0';
                 //     c.real = PyOS_string_to_double(buf, null, null);
-                //     if (c.real == -1.0 && vm.PyErr_Occurred())
+                //     if (c.real === -1.0 && vm.PyErr_Occurred())
                 //         break;
                 //     n = marshal.r_byte(vm, p);
-                //     if (n == EOF) {
+                //     if (n === EOF) {
                 //         vm.PyErr_SetString(builtins.EOFError,
                 //             "EOF read where object expected");
                 //         break;
@@ -487,7 +487,7 @@ export const marshal = {
                 //     memcpy(buf, ptr, n);
                 //     buf[n] = '\0';
                 //     c.imag = PyOS_string_to_double(buf, null, null);
-                //     if (c.imag == -1.0 && vm.PyErr_Occurred())
+                //     if (c.imag === -1.0 && vm.PyErr_Occurred())
                 //         break;
                 //     retval = PyComplex_FromCComplex(c);
                 //     Marsha.r_ref(vm, retval, flag, p);
@@ -501,13 +501,13 @@ export const marshal = {
                 //         if (buf === null)
                 //             break;
                 //         c.real = _PyFloat_Unpack8(buf, 1);
-                //         if (c.real == -1.0 && vm.PyErr_Occurred())
+                //         if (c.real === -1.0 && vm.PyErr_Occurred())
                 //             break;
                 //         buf = marshal.r_string(vm, 8, p);
                 //         if (buf === null)
                 //             break;
                 //         c.imag = _PyFloat_Unpack8(buf, 1);
-                //         if (c.imag == -1.0 && vm.PyErr_Occurred())
+                //         if (c.imag === -1.0 && vm.PyErr_Occurred())
                 //             break;
                 //         retval = PyComplex_FromCComplex(c);
                 //         Marsha.r_ref(vm, retval, flag, p);
@@ -641,10 +641,11 @@ export const marshal = {
                 retval = {};
                 for (; ;) {
                     var key, val;
-                    key = r_object(p);
-                    if (key === undefined)
+                    key = marshal.r_object(p);
+                    if (key === undefined){
                         break;
-                    val = r_object(p);
+                    }
+                    val = marshal.r_object(p);
                     if (val === undefined) {
                         break;
                     }
@@ -670,8 +671,8 @@ export const marshal = {
                     vm.PyErr_SetString(builtins.ValueError, "bad marshal data (set size out of range)");
                     break;
                 }
-                retval = (type == marshal.TYPE_SET) ? PySet_New(null) : PyFrozenSet_New(null);
-                if (type == marshal.TYPE_SET) {
+                retval = (type === marshal.TYPE_SET) ? PySet_New(null) : PyFrozenSet_New(null);
+                if (type === marshal.TYPE_SET) {
                     if (flag) {
                         marshal.r_ref(vm, retval, flag, p);
                     }
@@ -687,10 +688,10 @@ export const marshal = {
                 }
 
                 for (i = 0; i < n; i++) {
-                    retval.add(r_object(p));
+                    retval.add(marshal.r_object(p));
                 }
 
-                if (type != marshal.TYPE_SET) {
+                if (type !== marshal.TYPE_SET) {
                     retval = marshal.r_ref_insert(retval, idx, flag, p);
                 }
                 break;
@@ -765,8 +766,9 @@ export const marshal = {
             case marshal.TYPE_REF:
                 n = marshal.r_long(vm, p);
                 if (n < 0 || n >= p.refs.length) {
-                    if (n == -1 && vm.PyErr_Occurred())
+                    if (n === -1 && vm.PyErr_Occurred()){
                         break;
+                    }
                     vm.PyErr_SetString(builtins.ValueError, "bad marshal data (invalid reference)");
                     break;
                 }
@@ -792,7 +794,7 @@ export const marshal = {
     read_object: function (vm, p) {
         var v;
         if (vm.PyErr_Occurred()) {
-            console.log.error("readobject called with exception set\n");
+            window.console.log.error("readobject called with exception set\n");
             return null;
         }
         v = marshal.r_object(vm, p);

@@ -424,14 +424,12 @@ export const marshal = {
 
                 /* Sixth byte */
                 flo = buf[2] << 16;
-                p += incr;
 
                 /* Seventh byte */
-                flo |= buf[1] << 8;
-                p += incr;
+                flo |= buf[1 + incr] << 8;
 
                 /* Eighth byte */
-                flo |= buf[0];
+                flo |= buf[0 + incr + incr];
 
                 retval = fhi + flo / 16777216.0;
                 /* 2**24 */

@@ -51,7 +51,7 @@ export class VirtualMachine {
         this.run_payload(payload, args);
     }
 
-    run_payload(payload, args){
+    run_payload(payload, args) {
         args = args || [];
         const bytecode = atob(payload);
         const code = modules.marshal.load_pyc(this, bytecode);
@@ -235,7 +235,9 @@ export class VirtualMachine {
         let indent = "    " * (this.frames.length - 1),
             op = `${opcode.opoffset}: ${opcode.byteName}`;
         for (var arg in opcode.args) {
-            if (!opcode.args.hasOwnProperty(arg)){continue;}
+            if (!opcode.args.hasOwnProperty(arg)) {
+                continue;
+            }
             op += ` ${opcode.args[arg]}`;
         }
         window.console.log(`  ${indent}data: ${this.frame.stack}`);
@@ -247,11 +249,11 @@ export class VirtualMachine {
         let bytecode_fn, why = null;
         try {
             // window.console.log('OPCODE: ', modules.dis.opname[opcode];, args);
-            if (opcode in modules.dis.unary_ops) {
+            if (modules.dis.unary_ops.has(opcode)) {
                 this.unaryOperator(modules.dis.opname[opcode].slice(6));
-            } else if (opcode in modules.dis.binary_ops) {
+            } else if (modules.dis.binary_ops.has(opcode)) {
                 this.binaryOperator(modules.dis.opname[opcode].slice(7));
-            } else if (opcode in modules.dis.inplace_ops) {
+            } else if (modules.dis.inplace_ops.has(opcode)) {
                 this.inplaceOperator(modules.dis.opname[opcode].slice(8));
                 // } else if (opcode in modules.dis.slice_ops) {
                 //     this.sliceOperator(modules.dis.opname[opcode]);
@@ -633,6 +635,18 @@ export class VirtualMachine {
 
     byte_JUMP_ABSOLUTE(jump) {
         this.jump(jump);
+    }
+
+    byte_POP_JUMP_IF_TRUE(jump) {
+        if (this.pop()) {
+            this.jump(jump);
+        }
+    }
+
+    byte_POP_JUMP_IF_FALSE(jump) {
+        if (!this.pop()) {
+            this.jump(jump);
+        }
     }
 
     byte_POP_JUMP_IF_TRUE_OR_POP(jump) {

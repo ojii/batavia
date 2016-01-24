@@ -98,7 +98,7 @@ export function __import__(args){
         this.run_frame(frame);
         modules.sys.modules[name] = frame.f_locals;
         if (names === null){
-            return module.sys.modules[name];
+            return modules.sys.modules[name];
         } else {
             module = {};
             for (var n in names){
@@ -293,8 +293,8 @@ export function memoryview(){
 export function min(args) {
     return Math.min.apply(null, args);
 }
-export function next(){
-    throw new NotImplementedError("Builtin Batavia function 'next' not implemented");
+export function next(iterator) {
+    return iterator.__next__();
 }
 export function object(){
     throw new NotImplementedError("Builtin Batavia function 'object' not implemented");
